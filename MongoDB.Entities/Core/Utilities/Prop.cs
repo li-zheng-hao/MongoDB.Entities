@@ -10,7 +10,7 @@ namespace MongoDB.Entities;
 public static class Prop
 {
     static readonly Regex _rxOne = new(@"(?:\.(?:\w+(?:[[(]\d+[)\]])?))+", RegexOptions.Compiled); //matched result: One.Two[1].Three.get_Item(2).Four
-    static readonly Regex _rxTwo = new(@".get_Item\((\d+)\)", RegexOptions.Compiled);              //replaced result: One.Two[1].Three[2].Four
+    static readonly Regex _rxTwo = new(@".get_Item\((\d+)\)", RegexOptions.Compiled); //replaced result: One.Two[1].Three[2].Four
     static readonly Regex _rxThree = new(@"\[\d+\]", RegexOptions.Compiled);
     static readonly Regex _rxFour = new(@"\[(\d+)\]", RegexOptions.Compiled);
 
@@ -46,26 +46,28 @@ public static class Prop
         ThrowIfInvalid(expression);
 
         return _rxTwo.Replace(
-            _rxOne.Match(expression.ToString()).Value[1..],
-            m => "[" + m.Groups[1].Value + "]");
+            _rxOne.Match(expression.ToString()).Value.Remove(0, 1),
+            m => "[" + m.Groups[1].Value + "]"
+        );
     }
 
     internal static string GetPath(string expString)
     {
-        return
-            _rxThree.Replace(
-                _rxTwo.Replace(
-                    _rxOne.Match(expString).Value[1..],
-                    m => "[" + m.Groups[1].Value + "]"),
-                "");
+        return _rxThree.Replace(
+            _rxTwo.Replace(
+                _rxOne.Match(expString).Value.Remove(0, 1),
+                m => "[" + m.Groups[1].Value + "]"
+            ),
+            ""
+        );
     }
 
     /// <summary>
     /// Returns the collection/entity name of a given entity type
     /// </summary>
     /// <typeparam name="T">The type of the entity to get the collection name of</typeparam>
-    public static string Collection<T>() where T : IEntity
-        => Cache<T>.CollectionName;
+    public static string Collection<T>()
+        where T : IEntity => Cache<T>.CollectionName;
 
     /// <summary>
     /// Returns the name of the property for a given expression.
@@ -84,8 +86,8 @@ public static class Prop
     /// <para>EX: Authors[0].Books[0].Title > Authors.Books.Title</para>
     /// </summary>
     /// <param name="expression">x => x.SomeList[0].SomeProp</param>
-    public static string Path<T>(Expression<Func<T, object?>> expression)
-        => _rxThree.Replace(GetPath(expression), "");
+    public static string Path<T>(Expression<Func<T, object?>> expression) =>
+        _rxThree.Replace(GetPath(expression), "");
 
     /// <summary>
     /// Returns a path with filtered positional identifiers $[x] for a given expression.
@@ -99,7 +101,8 @@ public static class Prop
     {
         return _rxFour.Replace(
             GetPath(expression),
-            m => ".$[" + ToLowerCaseLetter(int.Parse(m.Groups[1].Value)) + "]");
+            m => ".$[" + ToLowerCaseLetter(int.Parse(m.Groups[1].Value)) + "]"
+        );
     }
 
     /// <summary>
@@ -107,24 +110,23 @@ public static class Prop
     /// <para>EX: Authors[0].Name > Authors.$[].Name</para>
     /// </summary>
     /// <param name="expression">x => x.SomeList[0].SomeProp</param>
-    public static string PosAll<T>(Expression<Func<T, object?>> expression)
-        => _rxThree.Replace(GetPath(expression), ".$[]");
+    public static string PosAll<T>(Expression<Func<T, object?>> expression) =>
+        _rxThree.Replace(GetPath(expression), ".$[]");
 
     /// <summary>
     /// Returns a path with the first positional operator $ for a given expression.
     /// <para>EX: Authors[0].Name > Authors.$.Name</para>
     /// </summary>
     /// <param name="expression">x => x.SomeList[0].SomeProp</param>
-    public static string PosFirst<T>(Expression<Func<T, object?>> expression)
-        => _rxThree.Replace(GetPath(expression), ".$");
+    public static string PosFirst<T>(Expression<Func<T, object?>> expression) =>
+        _rxThree.Replace(GetPath(expression), ".$");
 
     /// <summary>
     /// Returns a path without any filtered positional identifier prepended to it.
     /// <para>EX: b => b.Tags > Tags</para>
     /// </summary>
     /// <param name="expression">x => x.SomeProp</param>
-    public static string Elements<T>(Expression<Func<T, object?>> expression)
-        => Path(expression);
+    public static string Elements<T>(Expression<Func<T, object?>> expression) => Path(expression);
 
     /// <summary>
     /// Returns a path with the filtered positional identifier prepended to the property path.
@@ -134,6 +136,6 @@ public static class Prop
     /// </summary>
     /// <param name="index">0=a 1=b 2=c 3=d and so on...</param>
     /// <param name="expression">x => x.SomeProp</param>
-    public static string Elements<T>(int index, Expression<Func<T, object?>> expression)
-        => $"{ToLowerCaseLetter(index)}.{Path(expression)}";
+    public static string Elements<T>(int index, Expression<Func<T, object?>> expression) =>
+        $"{ToLowerCaseLetter(index)}.{Path(expression)}";
 }

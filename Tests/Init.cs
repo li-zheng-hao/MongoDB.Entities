@@ -10,30 +10,19 @@ namespace MongoDB.Entities.Tests;
 [TestClass]
 public static class InitTest
 {
-    static MongoClientSettings ClientSettings { get; set; }
-    static bool UseTestContainers;
-
+    public static MongoClientSettings ClientSettings { get; set; }
+    public static string ConnectionString { get; set; }
     [AssemblyInitialize]
     public static async Task Init(TestContext _)
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-
-        UseTestContainers = System.Environment.GetEnvironmentVariable("MONGODB_ENTITIES_TESTCONTAINERS") != null;
-
-        if (UseTestContainers)
-        {
-            var testContainer = await TestDatabase.CreateDatabase();
-            ClientSettings = MongoClientSettings.FromConnectionString(testContainer.GetConnectionString());
-        }
-
-        await InitTestDatabase("mongodb-entities-test");
+        ConnectionString=System.Environment.GetEnvironmentVariable("APP_MONGO_CONNECTIONSTRING")!;
+        ClientSettings= MongoClientSettings.FromConnectionString(ConnectionString);
+        await InitTestDatabase("test");
     }
 
     public static async Task InitTestDatabase(string databaseName)
     {
-        if (UseTestContainers)
-            await DB.InitAsync(databaseName, ClientSettings);
-        else
-            await DB.InitAsync(databaseName);
+        await DB.InitAsync(databaseName, ClientSettings);
     }
 }

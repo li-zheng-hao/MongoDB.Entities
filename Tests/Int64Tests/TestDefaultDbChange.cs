@@ -22,8 +22,8 @@ public class DefaultDatabaseChangingInt64
     [TestMethod]
     public async Task returns_correct_database()
     {
-        await DB.InitAsync("test1");
-        await DB.InitAsync("test2");
+        await DB.InitAsync("test1",InitTest.ClientSettings);
+        await DB.InitAsync("test2",InitTest.ClientSettings);
 
         var defaultDb = DB.Database(default);
         var database = DB.Database("test2");
@@ -40,7 +40,7 @@ public class DefaultDatabaseChangingInt64
     [TestMethod]
     public async Task do_not_change_default_database_when_the_same()
     {
-        await DB.InitAsync("test1");
+        await DB.InitAsync("test1",InitTest.ClientSettings);
 
         var defaultDb = DB.Database(default);
         var defaultDbName = DB.DatabaseName<AuthorInt64>();

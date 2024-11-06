@@ -132,14 +132,12 @@ public class IndexesInt64
           .Option(o => o.Background = false)
           .CreateAsync();
 
-        var guid = Guid.NewGuid();
-
         var list = new[] {
-            new GenreInt64{ GuidID = guid, Position = 0, Name = "this should not match"},
-            new GenreInt64{ GuidID = guid, Position = 3, Name = "one two three four five six"},
-            new GenreInt64{ GuidID = guid, Position = 4, Name = "one two three four five six seven"},
-            new GenreInt64{ GuidID = guid, Position = 2, Name = "one two three four five six seven eight"},
-            new GenreInt64{ GuidID = guid, Position = 1, Name = "one two three four five six seven eight nine"}
+            new GenreInt64{ GuidID = Guid.NewGuid(), Position = 0, Name = "this should not match"},
+            new GenreInt64{ GuidID = Guid.NewGuid(), Position = 3, Name = "one two three four five six"},
+            new GenreInt64{ GuidID = Guid.NewGuid(), Position = 4, Name = "one two three four five six seven"},
+            new GenreInt64{ GuidID = Guid.NewGuid(), Position = 2, Name = "one two three four five six seven eight"},
+            new GenreInt64{ GuidID = Guid.NewGuid(), Position = 1, Name = "one two three four five six seven eight nine"}
         };
 
         await list.SaveAsync();

@@ -85,8 +85,8 @@ public class MultiDbEntity
     [TestMethod]
     public async Task multiple_initializations_should_not_throw()
     {
-        await DB.InitAsync("multi-init");
-        await DB.InitAsync("multi-init");
+        await DB.InitAsync("multi-init",InitTest.ClientSettings);
+        await DB.InitAsync("multi-init",InitTest.ClientSettings);
 
         var db = DB.Database("multi-init");
 

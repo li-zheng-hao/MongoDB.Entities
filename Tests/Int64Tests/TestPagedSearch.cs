@@ -41,6 +41,7 @@ public class PagedSearchInt64
     {
         var guid = Guid.NewGuid().ToString();
 
+        await DB.DropCollectionAsync<BookInt64>();
         await SeedData(guid);
 
         var (Results, _, PageCount) = await DB

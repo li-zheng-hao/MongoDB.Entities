@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace MongoDB.Entities.Tests;
 
@@ -11,7 +12,10 @@ public class ReviewInt64 : Review
     public long Id { get; set; }
 
     public override object GenerateNewID()
-        => Convert.ToInt64(DateTime.UtcNow.Ticks);
+    {
+        Thread.Sleep(10);
+        return Convert.ToInt64(DateTime.UtcNow.Ticks);
+    }
 
     public override bool HasDefaultID()
         => Id == 0;

@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Threading;
 
 namespace MongoDB.Entities.Tests;
 
@@ -10,7 +11,10 @@ public class GenreInt64 : Genre
     public Int64 ID { get; set; }
 
     public override object GenerateNewID()
-        => Convert.ToInt64(DateTime.UtcNow.Ticks);
+    {
+        Thread.Sleep(10);
+        return Convert.ToInt64(DateTime.UtcNow.Ticks);
+    }
 
     public override bool HasDefaultID()
         => ID == 0;

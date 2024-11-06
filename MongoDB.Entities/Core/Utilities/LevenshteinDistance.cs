@@ -18,7 +18,7 @@ class Levenshtein
         if (_costs.Length == 0)
             return value.Length;
 
-        for (var i = 0; i < _costs.Length;)
+        for (var i = 0; i < _costs.Length; )
             _costs[i] = ++i;
 
         for (var i = 0; i < value.Length; i++)
@@ -51,6 +51,6 @@ class Levenshtein
             }
         }
 
-        return _costs[^1];
+        return _costs[_costs.Length - 1];
     }
 }
